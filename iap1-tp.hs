@@ -1,7 +1,7 @@
 -- Completar con los datos del grupo
 --
 -- Nombre de Grupo: 404_Name_Not_Found
--- Integrante 1: Integrante 1: Ezequiel Trigo , ezequiel0trigo@gmail.com, 603/22
+-- Integrante 1: Ezequiel Trigo , ezequiel0trigo@gmail.com, 603/22
 -- Integrante 2: Joaquin Piaggio, piaggiojoaquinpiaggio@gmail.com, 700/22
 -- Integrante 3: Tomas Agustin Andujar Ferreira, tomas.andujar02@gmail.com, 823/22
 -- Integrante 4: Francisco Nistal, franistal3@gmail.com, 905/22
