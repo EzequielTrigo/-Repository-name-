@@ -36,41 +36,112 @@ likesDePublicacion (_, _, us) = us
 
 -- Ejercicios
 
+--1)
+-- esta funcion devuelve una lista de todos los usuarios que estan en la red social.
 nombresDeUsuarios :: RedSocial -> [String]
-nombresDeUsuarios = undefined
+nombresDeUsuarios red | usuarios red == [] = []
+                      | otherwise = proyectarNombres (usuarios red)
 
--- describir qué hace la función: .....
+proyectarNombres :: [Usuario] -> [[Char]]
+proyectarNombres us = quitarRepetidos (proyectarNombresAUX us)
+
+proyectarNombresAUX :: [Usuario] -> [[Char]]
+proyectarNombresAUX [x]    = [nombreDeUsuario(x)]
+proyectarNombresAUX (x:xs) = (nombreDeUsuario (x)) : proyectarNombresAUX xs
+
+quitarRepetidos :: (Eq t) => [t] -> [t]
+quitarRepetidos [x] = [x]
+quitarRepetidos (x:xs) | hayIgualesDe x xs == True = quitarRepetidos xs
+                       | otherwise = x : quitarRepetidos xs 
+
+hayIgualesDe :: (Eq t) => t -> [t] -> Bool
+hayIgualesDe x  [] = False
+hayIgualesDe x (y:ys) |x == y    = True
+                      |otherwise = hayIgualesDe x ys
+
+
+--2)
+-- esta funcion devuelve la lista de amigos del usuario que se introduce
 amigosDe :: RedSocial -> Usuario -> [Usuario]
-amigosDe = undefined
+amigosDe red u = amigosDeAUX (relaciones red) (idDeUsuario u)
 
--- describir qué hace la función: .....
+amigosDeAUX :: [Relacion] -> Integer -> [Usuario]
+amigosDeAUX [] _ = []
+amigosDeAUX (x:xs) u | pertenece x u == True = (usuarioDelAmigo x u) : amigosDeAUX xs u
+                     | otherwise = amigosDeAUX xs u
+
+usuarioDelAmigo :: (Usuario,Usuario) -> Integer -> Usuario
+usuarioDelAmigo (a,b) u |idDeUsuario a == u = b
+                        |otherwise          = a
+
+pertenece :: (Usuario,Usuario) -> Integer -> Bool
+pertenece (a,b) n |idDeUsuario a == n = True
+                  |idDeUsuario b == n = True
+                  |otherwise          = False
+
+
+--3)
+-- esta funcion ...
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
-cantidadDeAmigos = undefined
+cantidadDeAmigos red u = longitud (amigosDe red u) 
 
--- describir qué hace la función: .....
+longitud :: [Usuario] -> Int
+longitud [] = 0
+longitud (x:xs)| xs == []  = 1
+               | otherwise = 1 + longitud xs
+
+
+--4)
+-- esta funcion ...
 usuarioConMasAmigos :: RedSocial -> Usuario
-usuarioConMasAmigos = undefined
+usuarioConMasAmigos red = usuarioConMasAmigosAUX red (usuarios red) (head(usuarios red)) 
 
--- describir qué hace la función: .....
+usuarioConMasAmigosAUX :: RedSocial -> [Usuario] -> Usuario -> Usuario
+usuarioConMasAmigosAUX _ [] n = n
+usuarioConMasAmigosAUX r (x:xs) n | (cantidadDeAmigos r x) > (cantidadDeAmigos r n) = usuarioConMasAmigosAUX r xs x
+                                  | otherwise                                       = usuarioConMasAmigosAUX r xs n
+
+
+--5)
+-- esta funcion ...
 estaRobertoCarlos :: RedSocial -> Bool
-estaRobertoCarlos = undefined
+estaRobertoCarlos red | cantidadDeAmigos red (usuarioConMasAmigos red) > 1000000 = True 
+                      | otherwise                                                = False
 
--- describir qué hace la función: .....
+
+--6)
+-- esta funcion ...
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
-publicacionesDe = undefined
+publicacionesDe (us,r,p) u = publicacionesDeAUX p u 
 
--- describir qué hace la función: .....
+publicacionesDeAUX :: [Publicacion] -> Usuario -> [Publicacion]
+publicacionesDeAUX [] u = []
+publicacionesDeAUX (x:xs) u| autor x == u = x : publicacionesDeAUX xs u
+                           | otherwise = publicacionesDeAUX xs u
+
+autor :: Publicacion -> Usuario
+autor (a,p,l) = a
+
+
+--7)
+-- esta funcion ...
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
-publicacionesQueLeGustanA = undefined
+publicacionesQueLeGustanA red u = undefined
 
--- describir qué hace la función: .....
+
+--8)
+-- esta funcion ...
 lesGustanLasMismasPublicaciones :: RedSocial -> Usuario -> Usuario -> Bool
-lesGustanLasMismasPublicaciones = undefined
+lesGustanLasMismasPublicaciones red u1 u2 = undefined
 
--- describir qué hace la función: .....
+
+--9)
+-- esta funcion ...
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
-tieneUnSeguidorFiel = undefined
+tieneUnSeguidorFiel red u = undefined
 
--- describir qué hace la función: .....
+
+--10)
+-- esta funcion ...
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
-existeSecuenciaDeAmigos = undefined
+existeSecuenciaDeAmigos red u1 u2 = undefined
