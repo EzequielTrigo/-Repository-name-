@@ -61,7 +61,7 @@ hayIgualesDe x (y:ys) |x == y    = True
 
 
 --2)
--- esta funcion devuelve la lista de amigos del usuario que se introduce
+-- esta funcion devuelve la lista de amigos del usuario que se introduce.
 amigosDe :: RedSocial -> Usuario -> [Usuario]
 amigosDe red u = amigosDeAUX (relaciones red) (idDeUsuario u)
 
@@ -81,7 +81,7 @@ pertenece (a,b) n |idDeUsuario a == n = True
 
 
 --3)
--- esta funcion ...
+-- esta funcion devuelve la cantidad de amigos que tiene el usuario de entrada.
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
 cantidadDeAmigos red u = longitud (amigosDe red u) 
 
@@ -92,7 +92,7 @@ longitud (x:xs)| xs == []  = 1
 
 
 --4)
--- esta funcion ...
+-- esta funcion devuelve el usuario con la mayor cantidad de amigos en la red social.
 usuarioConMasAmigos :: RedSocial -> Usuario
 usuarioConMasAmigos red = usuarioConMasAmigosAUX red (usuarios red) (head(usuarios red)) 
 
@@ -103,45 +103,105 @@ usuarioConMasAmigosAUX r (x:xs) n | (cantidadDeAmigos r x) > (cantidadDeAmigos r
 
 
 --5)
--- esta funcion ...
+-- esta funcion devuelve true si exite por lo menos un usuario con mas de un millon de amigos.
 estaRobertoCarlos :: RedSocial -> Bool
 estaRobertoCarlos red | cantidadDeAmigos red (usuarioConMasAmigos red) > 1000000 = True 
                       | otherwise                                                = False
 
 
 --6)
--- esta funcion ...
+-- esta funcion devuelve una lista con las publicaciones hechas en la red social por el usuario de entrada.
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
-publicacionesDe (us,r,p) u = publicacionesDeAUX p u 
+publicacionesDe red u = publicacionesDeAUX (publicaciones red) u 
 
 publicacionesDeAUX :: [Publicacion] -> Usuario -> [Publicacion]
 publicacionesDeAUX [] u = []
-publicacionesDeAUX (x:xs) u| autor x == u = x : publicacionesDeAUX xs u
+publicacionesDeAUX (x:xs) u| usuarioDePublicacion x == u = x : publicacionesDeAUX xs u
                            | otherwise = publicacionesDeAUX xs u
-
-autor :: Publicacion -> Usuario
-autor (a,p,l) = a
 
 
 --7)
--- esta funcion ...
+-- esta funcion devuelve una lista de las publicaciones que tienen le gustan al usuario de entrada.
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
-publicacionesQueLeGustanA red u = undefined
+publicacionesQueLeGustanA (_ , _ ,[]) u = []
+publicacionesQueLeGustanA (us,rel,(p:ps)) u2 | leGustaLaPublicacion p u2 == True = p : publicacionesQueLeGustanA (us,rel,ps) u2
+                                             | otherwise = publicacionesQueLeGustanA (us,rel,ps) u2
+
+leGustaLaPublicacion :: Publicacion -> Usuario -> Bool
+leGustaLaPublicacion (aut,pub,[]) u2 = False
+leGustaLaPublicacion (aut,pub,(u:us)) u2 | u == u2 = True
+                                         | otherwise = leGustaLaPublicacion (aut,pub,us) u2
 
 
 --8)
--- esta funcion ...
+-- esta funcion devuelve true si a los dos usuarios de entrada le gustan las mismas publicaciones.
 lesGustanLasMismasPublicaciones :: RedSocial -> Usuario -> Usuario -> Bool
-lesGustanLasMismasPublicaciones red u1 u2 = undefined
+lesGustanLasMismasPublicaciones red u1 u2 = lesGustanLasMismasPublicacionesAUX (publicacionesQueLeGustanA red u1) (publicacionesQueLeGustanA red u2)
+
+lesGustanLasMismasPublicacionesAUX :: [Publicacion] -> [Publicacion] -> Bool
+lesGustanLasMismasPublicacionesAUX [] [] = True
+lesGustanLasMismasPublicacionesAUX [] _ = False
+lesGustanLasMismasPublicacionesAUX _ [] = False
+lesGustanLasMismasPublicacionesAUX (x:xs) (y:ys) | x /= y = False
+                                                 | otherwise = lesGustanLasMismasPublicacionesAUX xs ys
 
 
 --9)
--- esta funcion ...
+-- esta función devuelve true si a un usuario de la red social, le gusta todas las publicaciones del usuario de entrada.
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
-tieneUnSeguidorFiel red u = undefined
+tieneUnSeguidorFiel red u = tieneUnSeguidorFielAUX (publicacionesDelUsuario (publicaciones red) u) u
+
+tieneUnSeguidorFielAUX :: [Publicacion] -> Usuario -> Bool
+tieneUnSeguidorFielAUX [] u = False
+tieneUnSeguidorFielAUX (x:xs) u = busquedaDelUsuarioFiel (likesDePublicacion x) xs xs
+
+busquedaDelUsuarioFiel :: [Usuario] -> [Publicacion] -> [Publicacion] -> Bool
+busquedaDelUsuarioFiel [] _ _ = False
+busquedaDelUsuarioFiel _ [] _ = True
+busquedaDelUsuarioFiel (x:xs) (y:ys) (publis) | leGustaLaPublicacion y x == True = busquedaDelUsuarioFiel (x:xs) (ys) (publis)
+                                              | otherwise = busquedaDelUsuarioFiel xs (publis) (publis)
+
+publicacionesDelUsuario ::  [Publicacion] -> Usuario -> [Publicacion]
+publicacionesDelUsuario [] u = []
+publicacionesDelUsuario (x:xs) u | usuarioDePublicacion x == u = x : publicacionesDelUsuario xs u
+                                 | otherwise = publicacionesDelUsuario xs u
 
 
 --10)
--- esta funcion ...
+-- esta funcion devuelve true si el segundo usuario de entrada, es amigo inderectamente (o directamente), del primer usuario de entrada.
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
-existeSecuenciaDeAmigos red u1 u2 = undefined
+existeSecuenciaDeAmigos red u1 u2 | u2EsAmigo (amigosDe red u1 ) u2 == True = True
+                                  | otherwise = cadena red [u1] u2 [] 
+
+u2EsAmigo :: [Usuario] -> Usuario -> Bool
+u2EsAmigo [] _ = False
+u2EsAmigo (x:xs) u2 | x == u2 = True
+                    | otherwise = u2EsAmigo xs u2 
+
+-- comentar 
+cadena :: RedSocial -> [Usuario] -> Usuario -> [Usuario] -> Bool
+cadena red [] _ _ = False
+cadena red (x:xs) u2 baneados | u2EsAmigo (amigosDe2 red (x:xs)) u2 = True
+                              | otherwise = cadena red (quitarBaneados(amigosDe2 red (x:xs)) baneados) u2 (baneados ++ (x:xs))
+
+quitarBaneados :: [Usuario] -> [Usuario] -> [Usuario]
+quitarBaneados _ [] = []
+quitarBaneados us (x:xs) | perteneceABaneados x us == True = quitarBaneados (quitarTodos x us) xs
+                         | otherwise = quitarBaneados us xs
+
+amigosDe2 :: RedSocial -> [Usuario] -> [Usuario]
+amigosDe2 red (x:xs) = quitarRepetidos (amigosDe2Aux red (x:xs) )
+
+amigosDe2Aux :: RedSocial -> [Usuario] -> [Usuario]
+amigosDe2Aux red [] = []
+amigosDe2Aux red (x:xs) = (amigosDe red x) ++ (amigosDe2Aux red xs)
+
+quitarTodos :: Usuario -> [Usuario] -> [Usuario]
+quitarTodos y []=[]
+quitarTodos y (x:xs)| y == x = quitarTodos y xs
+                    | otherwise = x : quitarTodos y xs
+
+perteneceABaneados :: Usuario -> [Usuario] -> Bool
+perteneceABaneados y [] = False
+perteneceABaneados y (x:xs) | y==x = True
+                            |otherwise = perteneceABaneados y xs
