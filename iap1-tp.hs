@@ -181,13 +181,15 @@ u2EsAmigo (x:xs) u2 | x == u2 = True
 -- comentar 
 cadena :: RedSocial -> [Usuario] -> Usuario -> [Usuario] -> Bool
 cadena red [] _ _ = False
-cadena red (x:xs) u2 baneados | u2EsAmigo (amigosDe2 red (x:xs)) u2 = True
-                              | otherwise = cadena red (quitarBaneados(amigosDe2 red (x:xs)) baneados) u2 (baneados ++ (x:xs))
 
-quitarBaneados :: [Usuario] -> [Usuario] -> [Usuario]
-quitarBaneados _ [] = []
-quitarBaneados us (x:xs) | perteneceABaneados x us == True = quitarBaneados (quitarTodos x us) xs
-                         | otherwise = quitarBaneados us xs
+cadena red (x:xs) u2 revisados | u2EsAmigo (amigosDe2 red (x:xs)) u2 = True
+                               | otherwise = cadena red (quitarRevisados(amigosDe2 red (x:xs)) revisados) u2 (revisados ++ (x:xs))
+
+quitarRevisados :: [Usuario] -> [Usuario] -> [Usuario]
+quitarRevisados _ [] = []
+quitarRevisados us (x:xs) | perteneceARevisados x us == True = quitarRevisados (quitarTodos x us) xs
+                          | otherwise = quitarRevisados us xs
+
 
 amigosDe2 :: RedSocial -> [Usuario] -> [Usuario]
 amigosDe2 red (x:xs) = quitarRepetidos (amigosDe2Aux red (x:xs) )
@@ -201,7 +203,8 @@ quitarTodos y []=[]
 quitarTodos y (x:xs)| y == x = quitarTodos y xs
                     | otherwise = x : quitarTodos y xs
 
-perteneceABaneados :: Usuario -> [Usuario] -> Bool
-perteneceABaneados y [] = False
-perteneceABaneados y (x:xs) | y==x = True
-                            |otherwise = perteneceABaneados y xs
+perteneceARevisados :: Usuario -> [Usuario] -> Bool
+perteneceARevisados y [] = False
+perteneceARevisados y (x:xs) | y==x = True
+                             |otherwise = perteneceARevisados y xs
+
