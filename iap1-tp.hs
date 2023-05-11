@@ -181,6 +181,7 @@ u2EsAmigo (x:xs) u2 | x == u2 = True
 -- comentar 
 cadena :: RedSocial -> [Usuario] -> Usuario -> [Usuario] -> Bool
 cadena red [] _ _ = False
+
 cadena red (x:xs) u2 revisados | u2EsAmigo (amigosDe2 red (x:xs)) u2 = True
                                | otherwise = cadena red (quitarRevisados(amigosDe2 red (x:xs)) revisados) u2 (revisados ++ (x:xs))
 
@@ -188,6 +189,7 @@ quitarRevisados :: [Usuario] -> [Usuario] -> [Usuario]
 quitarRevisados _ [] = []
 quitarRevisados us (x:xs) | perteneceARevisados x us == True = quitarRevisados (quitarTodos x us) xs
                           | otherwise = quitarRevisados us xs
+
 
 amigosDe2 :: RedSocial -> [Usuario] -> [Usuario]
 amigosDe2 red (x:xs) = quitarRepetidos (amigosDe2Aux red (x:xs) )
@@ -205,3 +207,4 @@ perteneceARevisados :: Usuario -> [Usuario] -> Bool
 perteneceARevisados y [] = False
 perteneceARevisados y (x:xs) | y==x = True
                              |otherwise = perteneceARevisados y xs
+
